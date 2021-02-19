@@ -11,32 +11,29 @@ class Body {
     this.m = m1;
     this.isStatic = y;}
   void iterate(Body body) {
-    PVector lorentz = calcE(body);
+    PVector lorentz = PVector.add(calcE(body),v.cross(calcB(body)));
     v = PVector.add(v,lorentz);}
   void move(float iterator) {
     d = PVector.add(d, PVector.mult(v,iterator));}
   void sketch() {
-    strokeWeight(1);
-    //noStroke();
     colorMode(RGB);
-    fill(c1);
-    ellipse(d.x,d.y,10,10);
-    //point(d.x,d.y);
-  }
+    stroke(c1);
+    pushMatrix();
+    translate(d.x,d.y,d.z);
+    sphere(10);
+    popMatrix();}
   boolean returnStatic() {return this.isStatic;}
-  float calcV(Body center) {
-    return center.getM()/epsilon0/PVector.sub(center.getD(),this.getD()).mag();}
   PVector calcE(Body center) {
     PVector g = PVector.sub(center.getD(),this.getD());
-    PVector r = PVector.mult(g.normalize(),center.getM()/epsilon0/PVector.sub(center.getD(),this.getD()).magSq());
-    return r.limit(300);}
+    PVector r = PVector.mult(g.normalize(),1/epsilon0*center.getM()/4/PI/PVector.sub(center.getD(),this.getD()).magSq());
+    //return r.limit(190);}
+    return r;}
   PVector calcB(Body center) {
-    //println(center.getV());
-    if (center.getV().x==0.0) {
+    if (center.getV().mag()==0.0) {
       return new PVector(0,0);}
     else {
       PVector g = PVector.sub(center.getD(),this.getD());
-      PVector r = PVector.mult(PVector.mult(center.getV(),center.getM()).cross(g.normalize()),mu0/PVector.sub(center.getD(),this.getD()).magSq());
+      PVector r = PVector.mult(center.getV().cross(g.normalize()),center.getM()*it*mu0/PVector.sub(center.getD(),this.getD()).magSq());
       return r;}
     }
   PVector getD() {return d;}
@@ -44,4 +41,5 @@ class Body {
   float getM() {return this.m;}
   void setD(PVector d1) {d = d1;}
   void setV(PVector v1) {v = v1;}
+  void setColor(color c) {c1 = c;}
 }
